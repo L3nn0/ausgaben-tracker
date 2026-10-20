@@ -177,7 +177,7 @@ export default function ExpensesView({
             {filteredExpenses.length} {filteredExpenses.length === 1 ? 'Artikel' : 'Artikel'}
           </span>
           <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginLeft: '6px' }}>
-            • Summe: <strong style={{ color: '#fff' }}>{formatCurrency(filteredTotal)}</strong>
+            • Summe: <strong style={{ color: 'var(--text-main)' }}>{formatCurrency(filteredTotal)}</strong>
           </span>
         </div>
 

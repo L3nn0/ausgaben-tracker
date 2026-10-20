@@ -364,7 +364,7 @@
 .pm-sum {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-main);
   letter-spacing: -0.02em;
 }
 
@@ -466,7 +466,7 @@
 .expense-amount {
   font-size: 1.05rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--text-main);
   letter-spacing: -0.01em;
 }
 
@@ -654,6 +654,11 @@
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
+select option {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+}
+
 /* Quick Add Category Box */
 .quick-add-cat-box {
   background: rgba(99, 102, 241, 0.08);
@@ -780,7 +785,7 @@
 .pm-detail-sum {
   font-size: 1.6rem;
   font-weight: 800;
-  color: #fff;
+  color: var(--text-main);
   letter-spacing: -0.02em;
 }
 
@@ -852,7 +857,10 @@
    sleek black pill buttons, pastel accents and soft diffused shadows.
    ======================================================== */
 
-.app-container.theme-light {
+:root.theme-light,
+body.theme-light,
+.app-container.theme-light,
+.theme-light {
   --bg-main: #eef1f6;
   --bg-card: #ffffff;
   --bg-card-hover: #f8fafc;
@@ -1160,10 +1168,6 @@
   border-radius: 16px;
 }
 
-.theme-light .settings-list-item div[style*="color: #fff"] {
-  color: #0f172a !important;
-}
-
 .theme-light .pm-detail-header {
   background-color: #f8fafc;
   border: 1px solid #e2e8f0;
@@ -1174,8 +1178,41 @@
   color: #0f172a;
 }
 
-.theme-light div[style*="color: #fff"],
-.theme-light h2[style*="color: #fff"],
-.theme-light h3[style*="color: #fff"] {
-  color: #0f172a !important;
+/* Comprehensive Typography & Contrast Fixes for Design 2 */
+.theme-light {
+  color: #0f172a;
+}
+
+.theme-light h1,
+.theme-light h2,
+.theme-light h3,
+.theme-light h4,
+.theme-light strong,
+.theme-light b {
+  color: #0f172a;
+}
+
+/* Elements with intentional white text on dark or saturated backgrounds */
+.theme-light .btn-primary,
+.theme-light .btn-danger,
+.theme-light .fab-btn,
+.theme-light .app-logo,
+.theme-light .hero-amount,
+.theme-light .hero-stat-value,
+.theme-light .install-btn,
+.theme-light .pm-icon-wrap {
+  color: #ffffff !important;
+}
+
+.theme-light .hero-label {
+  color: #bfdbfe !important;
+}
+
+.theme-light .hero-stat-label {
+  color: #dbeafe !important;
+}
+
+.theme-light select option {
+  background-color: #ffffff;
+  color: #0f172a;
 }

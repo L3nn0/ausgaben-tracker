@@ -30,7 +30,7 @@ export default function PaymentMethodsView({
       {/* Header with action */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff' }}>
+          <h2 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>
             Bezahlarten & Summen
           </h2>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
@@ -70,7 +70,7 @@ export default function PaymentMethodsView({
                   <IconHelper name={pm.icon || 'CreditCard'} size={20} />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#fff' }}>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-main)' }}>
                     {pm.name}
                   </h3>
                   <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
@@ -81,7 +81,7 @@ export default function PaymentMethodsView({
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-main)' }}>
                     {formatCurrency(pm.sum)}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>

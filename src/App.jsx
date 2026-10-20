@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import './App.css';
 
@@ -46,6 +46,23 @@ export default function App() {
     }
     return 'dark';
   });
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const isLight = theme === 'light';
+      document.documentElement.classList.toggle('theme-light', isLight);
+      document.documentElement.classList.toggle('theme-dark', !isLight);
+      document.body.classList.toggle('theme-light', isLight);
+      document.body.classList.toggle('theme-dark', !isLight);
+      document.body.style.backgroundColor = isLight ? '#eef1f6' : '#0b0f19';
+      document.body.style.color = isLight ? '#0f172a' : '#f8fafc';
+
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.setAttribute('content', isLight ? '#eef1f6' : '#0b0f19');
+      }
+    }
+  }, [theme]);
 
   const handleToggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
