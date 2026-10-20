@@ -1,0 +1,26 @@
+{
+  "name": "Ausgaben Tracker PWA",
+  "short_name": "Ausgaben",
+  "description": "Einfache PWA zum Tracken deiner Ausgaben nach Bezahlarten und Kategorien",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["finance", "utilities", "productivity"]
+}
