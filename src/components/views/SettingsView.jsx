@@ -16,6 +16,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import {
+  formatCurrency,
   downloadBackupJSON,
   downloadExpensesCSV,
 } from '../../services/storage';
