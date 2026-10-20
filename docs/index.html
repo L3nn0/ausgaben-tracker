@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>Ausgaben Tracker | PWA</title>
+
+    <!-- PWA Primary Meta Tags -->
+    <meta name="theme-color" content="#0f172a" />
+    <meta name="description" content="Einfache PWA zum Tracken deiner täglichen Ausgaben mit Bezahlarten und Kategorien" />
+    
+    <!-- Web App Manifest (relative for GitHub Pages) -->
+    <link rel="manifest" href="./manifest.webmanifest" />
+
+    <!-- Favicon & Icons -->
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="apple-touch-icon" href="./icon.svg" />
+
+    <!-- iOS Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Ausgaben" />
+    <script type="module" crossorigin src="./assets/index-DjHqDLAj.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CJgBA9ky.css">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>
+      // Register Service Worker with relative scope for GitHub Pages compatibility
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js', { scope: './' })
+            .then((reg) => console.log('ServiceWorker registriert:', reg.scope))
+            .catch((err) => console.warn('ServiceWorker Registrierungsfehler:', err));
+        });
+      }
+    </script>
+  </body>
+</html>

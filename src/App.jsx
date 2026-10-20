@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import './App.css';
 
@@ -7,6 +7,7 @@ import {
   saveData,
   DEFAULT_PAYMENT_METHODS,
   DEFAULT_CATEGORIES,
+  DEFAULT_STORES,
 } from './services/storage';
 
 import Navbar from './components/Navbar';
@@ -15,6 +16,7 @@ import AddExpenseModal from './components/AddExpenseModal';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
 import PaymentMethodDetailModal from './components/PaymentMethodDetailModal';
 import CategoryModal from './components/CategoryModal';
+import StoreModal from './components/StoreModal';
 import PaymentMethodModal from './components/PaymentMethodModal';
 
 import DashboardView from './components/views/DashboardView';
@@ -49,6 +51,12 @@ export default function App() {
     category: null,
   });
 
+  // Store Configuration Modal
+  const [storeModal, setStoreModal] = useState({
+    isOpen: false,
+    store: null,
+  });
+
   // Payment Method Configuration Modal
   const [pmModal, setPmModal] = useState({
     isOpen: false,
@@ -64,6 +72,7 @@ export default function App() {
   const expenses = data.expenses || [];
   const paymentMethods = data.paymentMethods || [];
   const categories = data.categories || [];
+  const stores = data.stores || DEFAULT_STORES;
 
   const totalSpent = expenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
 
@@ -76,7 +85,7 @@ export default function App() {
     updateData(updated);
   };
 
-  // Add Category (e.g. from inline modal or settings)
+  // Add / Edit Category
   const handleSaveCategory = (category) => {
     const exists = categories.some((c) => c.id === category.id);
     let updatedCats;
@@ -92,6 +101,24 @@ export default function App() {
   const handleDeleteCategory = (catId) => {
     const updatedCats = categories.filter((c) => c.id !== catId);
     updateData({ ...data, categories: updatedCats });
+  };
+
+  // Add / Edit Store (Geschäft / Verkäufer)
+  const handleSaveStore = (store) => {
+    const exists = stores.some((s) => s.id === store.id);
+    let updatedStores;
+    if (exists) {
+      updatedStores = stores.map((s) => (s.id === store.id ? store : s));
+    } else {
+      updatedStores = [...stores, store];
+    }
+    updateData({ ...data, stores: updatedStores });
+  };
+
+  // Delete Store
+  const handleDeleteStore = (storeId) => {
+    const updatedStores = stores.filter((s) => s.id !== storeId);
+    updateData({ ...data, stores: updatedStores });
   };
 
   // Add or Edit Payment Method
@@ -171,6 +198,10 @@ export default function App() {
         Array.isArray(importedData.categories) && importedData.categories.length > 0
           ? importedData.categories
           : DEFAULT_CATEGORIES,
+      stores:
+        Array.isArray(importedData.stores) && importedData.stores.length > 0
+          ? importedData.stores
+          : DEFAULT_STORES,
       createdAt: importedData.createdAt || new Date().toISOString(),
     };
     updateData(merged);
@@ -181,13 +212,14 @@ export default function App() {
   const handleResetAll = () => {
     if (
       window.confirm(
-        'Möchtest du wirklich alle Daten zurücksetzen? Alle Ausgaben werden gelöscht und Standard-Kategorien wiederhergestellt.'
+        'Möchtest du wirklich alle Daten zurücksetzen? Alle Ausgaben werden gelöscht und Standard-Kategorien, Geschäfte und Bezahlarten wiederhergestellt.'
       )
     ) {
       const initial = {
         expenses: [],
         paymentMethods: DEFAULT_PAYMENT_METHODS,
         categories: DEFAULT_CATEGORIES,
+        stores: DEFAULT_STORES,
         createdAt: new Date().toISOString(),
       };
       updateData(initial);
@@ -212,6 +244,7 @@ export default function App() {
             expenses={expenses}
             paymentMethods={paymentMethods}
             categories={categories}
+            stores={stores}
             onSelectPaymentMethod={(pm) => setDetailPaymentMethod(pm)}
             onOpenAddExpense={() => {
               setInitialPmIdForAdd(null);
@@ -238,6 +271,7 @@ export default function App() {
             expenses={expenses}
             paymentMethods={paymentMethods}
             categories={categories}
+            stores={stores}
             onDeleteExpense={handleRequestDeleteExpense}
             onRequestDeleteAll={handleRequestDeleteAllExpenses}
             onOpenAddExpense={() => {
@@ -251,10 +285,14 @@ export default function App() {
           <SettingsView
             categories={categories}
             paymentMethods={paymentMethods}
+            stores={stores}
             expenses={expenses}
             onOpenAddCategory={() => setCategoryModal({ isOpen: true, category: null })}
             onEditCategory={(c) => setCategoryModal({ isOpen: true, category: c })}
             onDeleteCategory={handleDeleteCategory}
+            onOpenAddStore={() => setStoreModal({ isOpen: true, store: null })}
+            onEditStore={(s) => setStoreModal({ isOpen: true, store: s })}
+            onDeleteStore={handleDeleteStore}
             onOpenAddPaymentMethod={() => setPmModal({ isOpen: true, paymentMethod: null })}
             onEditPaymentMethod={(pm) => setPmModal({ isOpen: true, paymentMethod: pm })}
             onDeletePaymentMethod={handleDeletePaymentMethod}
@@ -290,7 +328,9 @@ export default function App() {
         onAddExpense={handleAddExpense}
         categories={categories}
         paymentMethods={paymentMethods}
+        stores={stores}
         onAddNewCategory={handleSaveCategory}
+        onAddNewStore={handleSaveStore}
         initialPaymentMethodId={initialPmIdForAdd}
       />
 
@@ -301,6 +341,7 @@ export default function App() {
         paymentMethod={detailPaymentMethod}
         expenses={expenses}
         categories={categories}
+        stores={stores}
         onDeleteExpense={handleRequestDeleteExpense}
         onDeleteAllForMethod={handleRequestDeleteAllForMethod}
         onOpenAddExpenseWithMethod={openAddExpenseWithMethod}
@@ -325,6 +366,16 @@ export default function App() {
         onSaveCategory={handleSaveCategory}
         onDeleteCategory={handleDeleteCategory}
         usageCount={expenses.filter((e) => e.categoryId === categoryModal.category?.id).length}
+      />
+
+      {/* Modal: Store Configuration (Add / Edit) */}
+      <StoreModal
+        isOpen={storeModal.isOpen}
+        onClose={() => setStoreModal({ isOpen: false, store: null })}
+        store={storeModal.store}
+        onSaveStore={handleSaveStore}
+        onDeleteStore={handleDeleteStore}
+        usageCount={expenses.filter((e) => e.storeId === storeModal.store?.id).length}
       />
 
       {/* Modal: Payment Method Configuration (Add / Edit) */}

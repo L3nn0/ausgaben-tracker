@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { X, ArrowLeft, Trash2, Plus, Receipt } from 'lucide-react';
 import { formatCurrency, formatDate } from '../services/storage';
 import IconHelper from './IconHelper';
@@ -10,6 +10,7 @@ export default function PaymentMethodDetailModal({
   paymentMethod,
   expenses = [],
   categories = [],
+  stores = [],
   onDeleteExpense,
   onDeleteAllForMethod,
   onOpenAddExpenseWithMethod,
@@ -24,6 +25,7 @@ export default function PaymentMethodDetailModal({
   const totalSum = methodExpenses.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
 
   const catMap = new Map(categories.map((c) => [c.id, c]));
+  const storeMap = new Map(stores.map((s) => [s.id, s]));
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -133,6 +135,7 @@ export default function PaymentMethodDetailModal({
                   expense={expense}
                   paymentMethod={paymentMethod}
                   category={catMap.get(expense.categoryId)}
+                  store={storeMap.get(expense.storeId)}
                   onDelete={onDeleteExpense}
                 />
               ))}

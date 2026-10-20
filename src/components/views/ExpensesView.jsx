@@ -7,6 +7,7 @@ export default function ExpensesView({
   expenses = [],
   paymentMethods = [],
   categories = [],
+  stores = [],
   onDeleteExpense,
   onRequestDeleteAll,
   onOpenAddExpense,
@@ -14,18 +15,32 @@ export default function ExpensesView({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPm, setSelectedPm] = useState('all');
   const [selectedCat, setSelectedCat] = useState('all');
+  const [selectedStore, setSelectedStore] = useState('all');
   const [sortBy, setSortBy] = useState('date-desc');
+
+  const pmMap = useMemo(() => new Map(paymentMethods.map((pm) => [pm.id, pm])), [paymentMethods]);
+  const catMap = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories]);
+  const storeMap = useMemo(() => new Map(stores.map((s) => [s.id, s])), [stores]);
 
   // Filtered & sorted expenses
   const filteredExpenses = useMemo(() => {
     return expenses
       .filter((e) => {
-        // Search filter
+        const storeName = storeMap.get(e.storeId)?.name || '';
+
+        // Search filter: matches title, note, or store name
         if (searchTerm.trim()) {
           const query = searchTerm.toLowerCase();
           const matchTitle = (e.title || '').toLowerCase().includes(query);
           const matchNote = (e.note || '').toLowerCase().includes(query);
-          if (!matchTitle && !matchNote) return false;
+          const matchStore = storeName.toLowerCase().includes(query);
+          if (!matchTitle && !matchNote && !matchStore) return false;
+        }
+
+        // Store filter
+        if (selectedStore !== 'all') {
+          if (selectedStore === 'none' && e.storeId) return false;
+          if (selectedStore !== 'none' && e.storeId !== selectedStore) return false;
         }
 
         // Payment method filter
@@ -55,15 +70,12 @@ export default function ExpensesView({
         }
         return 0;
       });
-  }, [expenses, searchTerm, selectedPm, selectedCat, sortBy]);
+  }, [expenses, searchTerm, selectedStore, selectedPm, selectedCat, sortBy, storeMap]);
 
   const filteredTotal = filteredExpenses.reduce(
     (sum, e) => sum + (Number(e.amount) || 0),
     0
   );
-
-  const pmMap = new Map(paymentMethods.map((pm) => [pm.id, pm]));
-  const catMap = new Map(categories.map((c) => [c.id, c]));
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -74,25 +86,26 @@ export default function ExpensesView({
           <input
             type="text"
             className="search-input"
-            placeholder="Artikel oder Notiz suchen..."
+            placeholder="Artikel, Geschäft oder Notiz suchen..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
         <div className="filters-row">
-          {/* Payment Method filter */}
+          {/* Store / Geschäft filter */}
           <select
             className="filter-select"
-            value={selectedPm}
-            onChange={(e) => setSelectedPm(e.target.value)}
+            value={selectedStore}
+            onChange={(e) => setSelectedStore(e.target.value)}
           >
-            <option value="all">Alle Bezahlarten</option>
-            {paymentMethods.map((pm) => (
-              <option key={pm.id} value={pm.id}>
-                {pm.name}
+            <option value="all">Alle Geschäfte</option>
+            {stores.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
               </option>
             ))}
+            <option value="none">Ohne Geschäft</option>
           </select>
 
           {/* Category filter */}
@@ -105,6 +118,20 @@ export default function ExpensesView({
             {categories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Payment Method filter */}
+          <select
+            className="filter-select"
+            value={selectedPm}
+            onChange={(e) => setSelectedPm(e.target.value)}
+          >
+            <option value="all">Alle Bezahlarten</option>
+            {paymentMethods.map((pm) => (
+              <option key={pm.id} value={pm.id}>
+                {pm.name}
               </option>
             ))}
           </select>
@@ -186,6 +213,7 @@ export default function ExpensesView({
               expense={expense}
               paymentMethod={pmMap.get(expense.paymentMethodId)}
               category={catMap.get(expense.categoryId)}
+              store={storeMap.get(expense.storeId)}
               onDelete={onDeleteExpense}
             />
           ))}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Plus, ArrowRight, Receipt, CreditCard, PieChart } from 'lucide-react';
 import { formatCurrency } from '../../services/storage';
 import IconHelper from '../IconHelper';
@@ -8,6 +8,7 @@ export default function DashboardView({
   expenses = [],
   paymentMethods = [],
   categories = [],
+  stores = [],
   onSelectPaymentMethod,
   onOpenAddExpense,
   onDeleteExpense,
@@ -50,8 +51,9 @@ export default function DashboardView({
     .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0))
     .slice(0, 5);
 
-  const pmMap = new Map(paymentMethods.map((pm) => [pm.id, pm]));
-  const catMap = new Map(categories.map((c) => [c.id, c]));
+  const pmMap = useMemo(() => new Map(paymentMethods.map((pm) => [pm.id, pm])), [paymentMethods]);
+  const catMap = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories]);
+  const storeMap = useMemo(() => new Map(stores.map((s) => [s.id, s])), [stores]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -207,6 +209,7 @@ export default function DashboardView({
                 expense={expense}
                 paymentMethod={pmMap.get(expense.paymentMethodId)}
                 category={catMap.get(expense.categoryId)}
+                store={storeMap.get(expense.storeId)}
                 onDelete={onDeleteExpense}
               />
             ))}

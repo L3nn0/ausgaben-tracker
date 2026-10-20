@@ -4,5 +4,8 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: './', // Relative base path so it runs smoothly on GitHub Pages (e.g. https://<user>.github.io/<repo>/)
+  base: './', // Relative base path for GitHub Pages subfolder
+  build: {
+    outDir: 'docs', // Builds directly into docs/ for instant GitHub Pages deployment
+  },
 })

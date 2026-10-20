@@ -19,15 +19,27 @@ export const DEFAULT_CATEGORIES = [
   { id: 'cat_sonstiges', name: 'Sonstiges', color: '#64748b', icon: 'MoreHorizontal' },
 ];
 
+export const DEFAULT_STORES = [
+  { id: 'store_rewe', name: 'Rewe', color: '#ef4444', icon: 'Store' },
+  { id: 'store_edeka', name: 'Edeka', color: '#f59e0b', icon: 'Store' },
+  { id: 'store_lidl', name: 'Lidl', color: '#3b82f6', icon: 'Store' },
+  { id: 'store_aldi', name: 'Aldi', color: '#0ea5e9', icon: 'Store' },
+  { id: 'store_amazon', name: 'Amazon', color: '#f97316', icon: 'Store' },
+  { id: 'store_dm', name: 'dm Drogerie', color: '#8b5cf6', icon: 'Store' },
+  { id: 'store_aral', name: 'Aral', color: '#10b981', icon: 'Store' },
+  { id: 'store_ikea', name: 'IKEA', color: '#eab308', icon: 'Store' },
+];
+
 export const INITIAL_SAMPLE_EXPENSES = [
   {
     id: 'exp_1',
-    title: 'Wocheneinkauf Supermarkt',
+    title: 'Wocheneinkauf',
     amount: 54.30,
     paymentMethodId: 'pm_girocard',
     categoryId: 'cat_lebensmittel',
+    storeId: 'store_edeka',
     date: new Date().toISOString().split('T')[0],
-    note: 'Edeka',
+    note: 'Frisches Obst & Gemüse',
   },
   {
     id: 'exp_2',
@@ -35,8 +47,9 @@ export const INITIAL_SAMPLE_EXPENSES = [
     amount: 6.50,
     paymentMethodId: 'pm_bar',
     categoryId: 'cat_freizeit',
+    storeId: 'store_rewe',
     date: new Date().toISOString().split('T')[0],
-    note: 'Bäckerei',
+    note: 'Bäckerei im Markt',
   },
   {
     id: 'exp_3',
@@ -44,8 +57,9 @@ export const INITIAL_SAMPLE_EXPENSES = [
     amount: 72.80,
     paymentMethodId: 'pm_kreditkarte',
     categoryId: 'cat_mobilitaet',
+    storeId: 'store_aral',
     date: new Date(Date.now() - 86400000).toISOString().split('T')[0],
-    note: 'Aral',
+    note: 'Super E10',
   },
   {
     id: 'exp_4',
@@ -53,8 +67,9 @@ export const INITIAL_SAMPLE_EXPENSES = [
     amount: 29.99,
     paymentMethodId: 'pm_paypal',
     categoryId: 'cat_shopping',
+    storeId: 'store_amazon',
     date: new Date(Date.now() - 172800000).toISOString().split('T')[0],
-    note: 'Bücher',
+    note: 'Fachbuch & Notizheft',
   },
 ];
 
@@ -66,6 +81,7 @@ export function loadData() {
         expenses: INITIAL_SAMPLE_EXPENSES,
         paymentMethods: DEFAULT_PAYMENT_METHODS,
         categories: DEFAULT_CATEGORIES,
+        stores: DEFAULT_STORES,
         createdAt: new Date().toISOString(),
       };
       saveData(initialData);
@@ -80,6 +96,9 @@ export function loadData() {
       categories: Array.isArray(parsed.categories) && parsed.categories.length > 0 
         ? parsed.categories 
         : DEFAULT_CATEGORIES,
+      stores: Array.isArray(parsed.stores) && parsed.stores.length > 0
+        ? parsed.stores
+        : DEFAULT_STORES,
       createdAt: parsed.createdAt || new Date().toISOString(),
     };
   } catch (err) {
@@ -88,6 +107,7 @@ export function loadData() {
       expenses: [],
       paymentMethods: DEFAULT_PAYMENT_METHODS,
       categories: DEFAULT_CATEGORIES,
+      stores: DEFAULT_STORES,
       createdAt: new Date().toISOString(),
     };
   }
@@ -116,22 +136,25 @@ export function downloadBackupJSON(data) {
 }
 
 // Download as CSV (Excel compatible)
-export function downloadExpensesCSV(expenses, paymentMethods, categories) {
+export function downloadExpensesCSV(expenses, paymentMethods, categories, stores = []) {
   const pmMap = new Map(paymentMethods.map(pm => [pm.id, pm.name]));
   const catMap = new Map(categories.map(c => [c.id, c.name]));
+  const storeMap = new Map(stores.map(s => [s.id, s.name]));
 
-  const headers = ['Datum', 'Artikel / Titel', 'Betrag (€)', 'Bezahlart', 'Kategorie', 'Notiz'];
+  const headers = ['Datum', 'Artikel / Titel', 'Betrag (€)', 'Geschäft / Verkäufer', 'Bezahlart', 'Kategorie', 'Notiz'];
   
   const rows = expenses.map(e => {
     const pmName = pmMap.get(e.paymentMethodId) || 'Unbekannt';
     const catName = catMap.get(e.categoryId) || 'Ohne Kategorie';
+    const storeName = storeMap.get(e.storeId) || '-';
     // Format amount with comma for German Excel
     const amountStr = Number(e.amount).toFixed(2).replace('.', ',');
     const safeTitle = `"${(e.title || '').replace(/"/g, '""')}"`;
     const safeNote = `"${(e.note || '').replace(/"/g, '""')}"`;
+    const safeStore = `"${storeName.replace(/"/g, '""')}"`;
     const safePm = `"${pmName.replace(/"/g, '""')}"`;
     const safeCat = `"${catName.replace(/"/g, '""')}"`;
-    return [e.date || '', safeTitle, amountStr, safePm, safeCat, safeNote].join(';');
+    return [e.date || '', safeTitle, amountStr, safeStore, safePm, safeCat, safeNote].join(';');
   });
 
   // UTF-8 BOM so Excel opens German Umlauts properly

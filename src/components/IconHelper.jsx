@@ -17,6 +17,7 @@ import {
   Utensils,
   Plane,
   Briefcase,
+  Store,
   HelpCircle
 } from 'lucide-react';
 
@@ -38,6 +39,7 @@ const ICON_MAP = {
   Utensils,
   Plane,
   Briefcase,
+  Store,
 };
 
 export const AVAILABLE_ICONS = Object.keys(ICON_MAP);

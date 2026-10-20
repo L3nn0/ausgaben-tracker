@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import {
   Tag,
+  Store,
   CreditCard,
   Download,
   Upload,
@@ -21,10 +22,14 @@ import IconHelper from '../IconHelper';
 export default function SettingsView({
   categories = [],
   paymentMethods = [],
+  stores = [],
   expenses = [],
   onOpenAddCategory,
   onEditCategory,
   onDeleteCategory,
+  onOpenAddStore,
+  onEditStore,
+  onDeleteStore,
   onOpenAddPaymentMethod,
   onEditPaymentMethod,
   onDeletePaymentMethod,
@@ -36,9 +41,13 @@ export default function SettingsView({
   // Calculate usage counts
   const catUsage = new Map();
   const pmUsage = new Map();
+  const storeUsage = new Map();
   expenses.forEach((e) => {
     catUsage.set(e.categoryId, (catUsage.get(e.categoryId) || 0) + 1);
     pmUsage.set(e.paymentMethodId, (pmUsage.get(e.paymentMethodId) || 0) + 1);
+    if (e.storeId) {
+      storeUsage.set(e.storeId, (storeUsage.get(e.storeId) || 0) + 1);
+    }
   });
 
   const handleFileChange = (e) => {
@@ -49,7 +58,7 @@ export default function SettingsView({
     reader.onload = (event) => {
       try {
         const parsed = JSON.parse(event.target?.result);
-        if (parsed && (parsed.expenses || parsed.categories || parsed.paymentMethods)) {
+        if (parsed && (parsed.expenses || parsed.categories || parsed.paymentMethods || parsed.stores)) {
           if (
             window.confirm(
               'Möchtest du dieses Backup wirklich wiederherstellen? Vorhandene Daten werden überschrieben.'
@@ -70,6 +79,68 @@ export default function SettingsView({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {/* Stores Section (Geschäfte & Verkäufer) */}
+      <section className="card">
+        <div className="card-title-row">
+          <div className="card-title">
+            <Store size={18} color="#0ea5e9" />
+            <span>Geschäfte & Verkäufer konfigurieren</span>
+          </div>
+          <button
+            type="button"
+            className="btn btn-primary btn-sm"
+            onClick={onOpenAddStore}
+          >
+            <Plus size={14} />
+            Neu
+          </button>
+        </div>
+
+        <div className="settings-group">
+          {stores.map((s) => (
+            <div key={s.id} className="settings-list-item">
+              <div className="settings-list-left">
+                <span
+                  style={{
+                    width: '12px',
+                    height: '12px',
+                    borderRadius: '50%',
+                    backgroundColor: s.color,
+                  }}
+                />
+                <div>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff' }}>
+                    {s.name}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    {storeUsage.get(s.id) || 0} verknüpfte Ausgaben
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '4px' }}>
+                <button
+                  type="button"
+                  className="delete-btn"
+                  title="Bearbeiten"
+                  onClick={() => onEditStore(s)}
+                >
+                  <Edit2 size={16} />
+                </button>
+                <button
+                  type="button"
+                  className="delete-btn"
+                  title="Löschen"
+                  onClick={() => onDeleteStore(s.id)}
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Categories Section */}
       <section className="card">
         <div className="card-title-row">
@@ -222,6 +293,7 @@ export default function SettingsView({
                 expenses,
                 paymentMethods,
                 categories,
+                stores,
                 exportedAt: new Date().toISOString(),
               })
             }
@@ -235,7 +307,7 @@ export default function SettingsView({
             type="button"
             className="btn btn-secondary"
             style={{ justifyContent: 'flex-start' }}
-            onClick={() => downloadExpensesCSV(expenses, paymentMethods, categories)}
+            onClick={() => downloadExpensesCSV(expenses, paymentMethods, categories, stores)}
           >
             <FileSpreadsheet size={16} color="#3b82f6" />
             <span>Ausgaben für Excel herunterladen (CSV)</span>
@@ -271,7 +343,7 @@ export default function SettingsView({
         </div>
         <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', lineHeight: '1.5' }}>
           Diese App ist eine vollständige <strong>Progressive Web App (PWA)</strong>. Sie funktioniert 
-          vollständig offline. Alle Artikel, Bezahlarten und Kategorien bleiben dauerhaft auf deinem Smartphone oder Computer 
+          vollständig offline. Alle Artikel, Bezahlarten, Kategorien und Geschäfte bleiben dauerhaft auf deinem Smartphone oder Computer 
           gespeichert, selbst wenn du die App schließt oder das Gerät neu startest.
         </p>
       </section>
@@ -285,7 +357,7 @@ export default function SettingsView({
           </div>
         </div>
         <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
-          Setzt alle Ausgaben, Kategorien und Bezahlarten auf die Standard-Einstellungen zurück.
+          Setzt alle Ausgaben, Kategorien, Geschäfte und Bezahlarten auf die Standard-Einstellungen zurück.
         </p>
         <button
           type="button"

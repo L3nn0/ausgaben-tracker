@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Store } from 'lucide-react';
 import { formatCurrency, formatDate } from '../services/storage';
 import IconHelper from './IconHelper';
 
@@ -7,10 +7,12 @@ export default function ExpenseItem({
   expense,
   paymentMethod,
   category,
+  store,
   onDelete,
 }) {
   const catColor = category?.color || '#64748b';
   const pmColor = paymentMethod?.color || '#3b82f6';
+  const storeColor = store?.color || '#0ea5e9';
 
   return (
     <div className="expense-item">
@@ -25,6 +27,23 @@ export default function ExpenseItem({
           <div className="expense-meta">
             <span>{formatDate(expense.date)}</span>
             
+            {/* Store / Geschäft Badge */}
+            {store && (
+              <span
+                className="badge"
+                style={{
+                  backgroundColor: `${storeColor}20`,
+                  color: storeColor,
+                  border: `1px solid ${storeColor}40`,
+                  fontWeight: 600,
+                }}
+                title={`Geschäft: ${store.name}`}
+              >
+                <Store size={12} />
+                {store.name}
+              </span>
+            )}
+
             {/* Category Badge */}
             <span
               className="badge"

@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { X, Plus, Check, Tag } from 'lucide-react';
+import { X, Plus, Check, Tag, Store } from 'lucide-react';
 import IconHelper from './IconHelper';
 
 const COLOR_PALETTE = [
-  '#f59e0b', // amber
-  '#3b82f6', // blue
-  '#10b981', // emerald
-  '#ec4899', // pink
-  '#8b5cf6', // violet
-  '#06b6d4', // cyan
   '#ef4444', // red
+  '#f59e0b', // amber
+  '#10b981', // emerald
+  '#3b82f6', // blue
+  '#0ea5e9', // cyan
+  '#8b5cf6', // violet
+  '#ec4899', // pink
   '#f97316', // orange
   '#14b8a6', // teal
   '#64748b', // slate
@@ -21,7 +21,9 @@ export default function AddExpenseModal({
   onAddExpense,
   categories = [],
   paymentMethods = [],
+  stores = [],
   onAddNewCategory,
+  onAddNewStore,
   initialPaymentMethodId = null,
 }) {
   const [title, setTitle] = useState('');
@@ -30,13 +32,20 @@ export default function AddExpenseModal({
     initialPaymentMethodId || paymentMethods[0]?.id || ''
   );
   const [categoryId, setCategoryId] = useState(categories[0]?.id || '');
+  const [storeId, setStoreId] = useState(stores[0]?.id || '');
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [note, setNote] = useState('');
 
   // Inline Quick Add Category state
   const [showQuickAddCat, setShowQuickAddCat] = useState(false);
   const [newCatName, setNewCatName] = useState('');
-  const [newCatColor, setNewCatColor] = useState(COLOR_PALETTE[0]);
+  const [newCatColor, setNewCatColor] = useState(COLOR_PALETTE[1]);
+
+  // Inline Quick Add Store state
+  const [showQuickAddStore, setShowQuickAddStore] = useState(false);
+  const [newStoreName, setNewStoreName] = useState('');
+  const [newStoreColor, setNewStoreColor] = useState(COLOR_PALETTE[0]);
+
   const [errorMsg, setErrorMsg] = useState('');
 
   if (!isOpen) return null;
@@ -63,6 +72,28 @@ export default function AddExpenseModal({
     setErrorMsg('');
   };
 
+  // Handle Quick Add Store
+  const handleCreateStore = (e) => {
+    e.preventDefault();
+    if (!newStoreName.trim()) {
+      setErrorMsg('Bitte einen Namen für das Geschäft eingeben.');
+      return;
+    }
+
+    const createdStore = {
+      id: `store_${Date.now()}`,
+      name: newStoreName.trim(),
+      color: newStoreColor,
+      icon: 'Store',
+    };
+
+    onAddNewStore(createdStore);
+    setStoreId(createdStore.id);
+    setNewStoreName('');
+    setShowQuickAddStore(false);
+    setErrorMsg('');
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim()) {
@@ -85,6 +116,7 @@ export default function AddExpenseModal({
       amount: numAmount,
       paymentMethodId,
       categoryId: categoryId || categories[0]?.id,
+      storeId: storeId || null,
       date: date || new Date().toISOString().split('T')[0],
       note: note.trim(),
     };
@@ -137,7 +169,7 @@ export default function AddExpenseModal({
                 id="expense-title"
                 type="text"
                 className="form-input"
-                placeholder="z.B. Mittagessen, Rewe, Kino, Tanken"
+                placeholder="z.B. Wocheneinkauf, Kaffee, Tanken"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 autoFocus
@@ -163,30 +195,107 @@ export default function AddExpenseModal({
               />
             </div>
 
-            {/* Payment Method / Bezahlart */}
+            {/* Store / Geschäft selection + inline create new store */}
             <div className="form-group">
-              <label className="form-label" htmlFor="expense-pm">
-                Bezahlart *
-              </label>
-              <select
-                id="expense-pm"
-                className="form-select"
-                value={paymentMethodId}
-                onChange={(e) => setPaymentMethodId(e.target.value)}
-                required
-              >
-                {paymentMethods.map((pm) => (
-                  <option key={pm.id} value={pm.id}>
-                    {pm.name}
-                  </option>
-                ))}
-              </select>
+              <div className="form-label">
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Store size={15} color="#0ea5e9" />
+                  Geschäft / Verkäufer
+                </span>
+                {!showQuickAddStore && (
+                  <button
+                    type="button"
+                    className="btn-link"
+                    onClick={() => setShowQuickAddStore(true)}
+                  >
+                    + Neues Geschäft erstellen
+                  </button>
+                )}
+              </div>
+
+              {!showQuickAddStore ? (
+                <select
+                  className="form-select"
+                  value={storeId}
+                  onChange={(e) => setStoreId(e.target.value)}
+                >
+                  <option value="">(Kein Geschäft)</option>
+                  {stores.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                /* Inline Quick Add Store Form */
+                <div className="quick-add-cat-box" style={{ borderColor: 'rgba(14, 165, 233, 0.4)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#38bdf8' }}>
+                      Neues Geschäft sofort anlegen:
+                    </span>
+                    <button
+                      type="button"
+                      className="close-btn"
+                      onClick={() => setShowQuickAddStore(false)}
+                      style={{ padding: '2px' }}
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Geschäftsname (z.B. Rewe, Amazon, Bäcker)"
+                    value={newStoreName}
+                    onChange={(e) => setNewStoreName(e.target.value)}
+                  />
+
+                  <div>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>
+                      Farbe wählen:
+                    </span>
+                    <div className="color-picker-row">
+                      {COLOR_PALETTE.map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          className={`color-chip ${newStoreColor === c ? 'selected' : ''}`}
+                          style={{ backgroundColor: c }}
+                          onClick={() => setNewStoreColor(c)}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                    <button
+                      type="button"
+                      className="btn btn-primary btn-sm"
+                      onClick={handleCreateStore}
+                      style={{ flex: 1 }}
+                    >
+                      <Check size={14} /> Speichern & Wählen
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => setShowQuickAddStore(false)}
+                    >
+                      Abbrechen
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Category selection + inline create new category */}
             <div className="form-group">
               <div className="form-label">
-                <span>Kategorie</span>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Tag size={15} color="#f59e0b" />
+                  Kategorie
+                </span>
                 {!showQuickAddCat && (
                   <button
                     type="button"
@@ -273,6 +382,26 @@ export default function AddExpenseModal({
               )}
             </div>
 
+            {/* Payment Method / Bezahlart */}
+            <div className="form-group">
+              <label className="form-label" htmlFor="expense-pm">
+                Bezahlart *
+              </label>
+              <select
+                id="expense-pm"
+                className="form-select"
+                value={paymentMethodId}
+                onChange={(e) => setPaymentMethodId(e.target.value)}
+                required
+              >
+                {paymentMethods.map((pm) => (
+                  <option key={pm.id} value={pm.id}>
+                    {pm.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
             {/* Date */}
             <div className="form-group">
               <label className="form-label" htmlFor="expense-date">
@@ -290,13 +419,13 @@ export default function AddExpenseModal({
             {/* Note */}
             <div className="form-group">
               <label className="form-label" htmlFor="expense-note">
-                Notiz / Laden (optional)
+                Notiz / Details (optional)
               </label>
               <input
                 id="expense-note"
                 type="text"
                 className="form-input"
-                placeholder="z.B. Notiz oder Ort"
+                placeholder="z.B. Quittungsnummer, Beschreibung"
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
               />
