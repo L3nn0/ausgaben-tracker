@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { X, Plus, Check, Tag, Store } from 'lucide-react';
 import IconHelper from './IconHelper';
 
@@ -26,13 +26,23 @@ export default function AddExpenseModal({
   onAddNewStore,
   initialPaymentMethodId = null,
 }) {
+  const sortedCategories = useMemo(
+    () => [...categories].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'de')),
+    [categories]
+  );
+
+  const sortedStores = useMemo(
+    () => [...stores].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'de')),
+    [stores]
+  );
+
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
   const [paymentMethodId, setPaymentMethodId] = useState(
     initialPaymentMethodId || paymentMethods[0]?.id || ''
   );
-  const [categoryId, setCategoryId] = useState(categories[0]?.id || '');
-  const [storeId, setStoreId] = useState(stores[0]?.id || '');
+  const [categoryId, setCategoryId] = useState(sortedCategories[0]?.id || '');
+  const [storeId, setStoreId] = useState(sortedStores[0]?.id || '');
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
   const [note, setNote] = useState('');
 
@@ -220,7 +230,7 @@ export default function AddExpenseModal({
                   onChange={(e) => setStoreId(e.target.value)}
                 >
                   <option value="">(Kein Geschäft)</option>
-                  {stores.map((s) => (
+                  {sortedStores.map((s) => (
                     <option key={s.id} value={s.id}>
                       {s.name}
                     </option>
@@ -313,7 +323,7 @@ export default function AddExpenseModal({
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
                 >
-                  {categories.map((c) => (
+                  {sortedCategories.map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
                     </option>

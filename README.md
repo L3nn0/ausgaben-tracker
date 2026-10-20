@@ -1,8 +1,24 @@
 # Ausgaben Tracker PWA 📱💳
 
-Eine einfache, schnelle und moderne Progressive Web App (PWA) zum Tracken deiner täglichen Ausgaben mit Bezahlarten und Kategorien.
+Eine einfache, schnelle und moderne Progressive Web App (PWA) zum Tracken deiner täglichen Ausgaben mit Bezahlarten, Kategorien und Geschäften/Verkäufern.
 
-Vollständig konfiguriert für **GitHub Pages** (inklusive automatischer GitHub Actions CI/CD Pipeline).
+---
+
+## 🎨 Zwei parallele Designs (Exact gleiche Funktionen & Daten)
+
+Die App bietet zwei Design-Varianten mit identischer Tastenanordnung, gleichen Funktionen und geteilter Datenspeicherung:
+
+1. **Design 1 (Dark Slate Studio):**
+   - Dunkles, elegantes Slate-Design mit Glassmorphism-Akzenten.
+   - Standardmäßig unter: `index.html` (bzw. Haupt-URL)
+
+2. **Design 2 (Clean Studio Light – Dribbble/Linear Style):**
+   - Helles, ultra-sauberes Studio-Design orientiert an modernen Vorlagen (weicher Hintergrund, reinweiße Karten, schwarze Pill-Buttons, dezente Schatten, Pastell-Badges).
+   - Erreichbar über:
+     - Die parallele Seite: **`light.html`**
+     - Den Umschalt-Button oben rechts in der Navigationsleiste (`✨ Design 2` / `🌙 Design 1`)
+     - Den Bereich **Optionen → Design & Erscheinungsbild**
+     - Oder URL-Parameter: `?design=2` bzw. `?design=light`
 
 ---
 
@@ -11,65 +27,44 @@ Vollständig konfiguriert für **GitHub Pages** (inklusive automatischer GitHub 
 Die App ist so eingerichtet, dass sie automatisch über GitHub Pages gebaut und veröffentlicht wird, sobald du den Code auf GitHub pushst.
 
 ### Schritt 1: Code zu GitHub pushen
-Falls du das Repository noch nicht auf GitHub hochgeladen hast:
 ```bash
 git add .
-git commit -m "Initial commit: Ausgaben Tracker PWA mit GitHub Pages Workflow"
+git commit -m "feat: Ausgaben Tracker mit Design 1 & 2 und Verkäufern"
 git branch -M main
 git remote add origin https://github.com/<DEIN-GITHUB-BENUTZERNAME>/<DEIN-REPO-NAME>.git
 git push -u origin main
 ```
 
 ### Schritt 2: GitHub Pages in den Repository-Einstellungen aktivieren
-1. Gehe auf GitHub in dein Repository.
-2. Klicke oben auf **Settings** (Einstellungen) ⚙️.
-3. Klicke links in der Menüleiste auf **Pages**.
-4. Wähle unter **Build and deployment** bei **Source** die Option:
-   👉 **`GitHub Actions`**
-5. Fertig! Der Workflow in `.github/workflows/deploy.yml` baut die App nun automatisch bei jedem Push und schaltet sie frei unter:
-   `https://<DEIN-BENUTZERNAME>.github.io/<DEIN-REPO-NAME>/`
+1. Gehe auf GitHub in dein Repository (`https://github.com/L3nn0/ausgaben-tracker`).
+2. Klicke oben auf **Settings** (Einstellungen) ⚙️ → links auf **Pages**.
+3. **Möglichkeit A (über /docs):**
+   - Source: `Deploy from a branch`
+   - Branch: `main` und Ordner: 👉 **`/docs`** auswählen
+4. **Möglichkeit B (über GitHub Actions):**
+   - Source: 👉 **`GitHub Actions`** auswählen
 
 ---
 
 ## ✨ Features der App
 
 1. **Artikel / Ausgaben erfassen:**
-   - Titel/Artikel, Preis (€), Bezahlart, Kategorie, Datum und Notiz.
-   - **Inline Kategorie-Erstellung:** Direkt beim Erfassen einer Ausgabe kannst du mit einem Klick eine neue Kategorie anlegen (inkl. Farbwahl), die sofort gespeichert und vorausgewählt wird.
+   - Titel/Artikel, Preis (€), Geschäft/Verkäufer, Bezahlart, Kategorie, Datum und Notiz.
+   - **Inline-Erstellung:** Direkt beim Erfassen einer Ausgabe kannst du mit einem Klick neue Kategorien oder Geschäfte erstellen, die sofort gespeichert werden.
 
 2. **Bezahlarten-Übersicht & Summen:**
-   - Zeigt alle Bezahlarten (z.B. Bar, Kreditkarte, Girocard, PayPal).
-   - Jede Bezahlart zeigt die **Gesamtsumme aller Ausgaben**, die Anzahl der Artikel und einen Fortschrittsbalken.
-   - **Klick auf eine Bezahlart:** Zeigt alle Artikel an, die mit dieser Bezahlart bezahlt wurden.
+   - Zeigt alle Bezahlarten (z.B. Bar, Kreditkarte, Girocard, PayPal) mit Summen und Anteilen.
+   - **Klick auf eine Bezahlart:** Zeigt alle zugehörigen Artikel an.
 
-3. **Löschfunktionen:**
+3. **Geschäfte & Verkäufer:**
+   - Eigenständige Entität, durchsuchbar im Suchfeld, mit eigenem Filter im Tab *Ausgaben* und Badge in der Listenansicht.
+
+4. **Löschfunktionen:**
    - Einzelne Artikel löschen.
-   - **Alle Artikel gleichzeitig löschen** (mit Sicherheits-Bestätigungsdialog).
+   - **Alle Artikel gleichzeitig löschen** (mit Sicherheitsabfrage).
    - Alle Artikel einer bestimmten Bezahlart löschen.
 
-4. **Konfiguration & Verwaltung:**
-   - Kategorien frei konfigurieren (Hinzufügen, Bearbeiten, Löschen, Farben).
-   - Bezahlarten frei konfigurieren (Hinzufügen, Bearbeiten, Löschen, Icons, Farben).
-
 5. **PWA, Persistenz & Download:**
-   - **Dauerhafte Speicherung:** Daten werden im lokalen Gerätespeicher (`localStorage`) aufbewahrt und bleiben bei jedem Neustart erhalten.
-   - **100% Offline-fähig:** Funktioniert dank Service Worker auch ohne Netzverbindung.
-   - **Installierbar:** Lässt sich direkt auf Smartphone und Desktop als native App installieren.
-   - **Download / Backup:**
-     - **JSON-Backup:** Vollständiges Backup herunterladen und wiederherstellen.
-     - **CSV-Export:** Ausgaben für Microsoft Excel oder Google Sheets exportieren.
-
----
-
-## 🛠️ Lokale Entwicklung
-
-```bash
-# Entwicklungsserver starten
-npm run dev
-
-# Für Produktion bauen
-npm run build
-
-# Produktions-Vorschau starten
-npm run preview
-```
+   - **Dauerhafte Speicherung:** Daten bleiben bei jedem Neustart erhalten.
+   - **100% Offline-fähig:** Funktioniert dank Service Worker auch ohne Internet.
+   - **JSON- & CSV-Download:** Ausgaben als Backup oder für Microsoft Excel exportieren.

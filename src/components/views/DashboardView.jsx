@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Plus, ArrowRight, Receipt, CreditCard, PieChart } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { Plus, ArrowRight, Receipt, CreditCard, PieChart, ChevronDown, ChevronUp } from 'lucide-react';
 import { formatCurrency } from '../../services/storage';
 import IconHelper from '../IconHelper';
 import ExpenseItem from '../ExpenseItem';
@@ -13,7 +13,10 @@ export default function DashboardView({
   onOpenAddExpense,
   onDeleteExpense,
   onGoToExpenses,
+  onSelectExpense,
 }) {
+  const [showAllCategories, setShowAllCategories] = useState(false);
+
   const totalSpent = expenses.reduce((sum, e) => sum + (Number(e.amount) || 0), 0);
   const averageSpent = expenses.length > 0 ? totalSpent / expenses.length : 0;
 
@@ -30,21 +33,23 @@ export default function DashboardView({
     };
   });
 
-  // Pre-calculate sums per category
-  const catStats = categories
-    .map((c) => {
-      const cExpenses = expenses.filter((e) => e.categoryId === c.id);
-      const sum = cExpenses.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
-      const percentage = totalSpent > 0 ? (sum / totalSpent) * 100 : 0;
-      return {
-        ...c,
-        sum,
-        count: cExpenses.length,
-        percentage,
-      };
-    })
-    .filter((c) => c.sum > 0)
-    .sort((a, b) => b.sum - a.sum);
+  // Pre-calculate sums per category (including count and percentage)
+  const catStats = useMemo(() => {
+    return categories
+      .map((c) => {
+        const cExpenses = expenses.filter((e) => e.categoryId === c.id);
+        const sum = cExpenses.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
+        const percentage = totalSpent > 0 ? (sum / totalSpent) * 100 : 0;
+        return {
+          ...c,
+          sum,
+          count: cExpenses.length,
+          percentage,
+        };
+      })
+      .filter((c) => c.sum > 0)
+      .sort((a, b) => b.sum - a.sum);
+  }, [categories, expenses, totalSpent]);
 
   // Recent 5 expenses
   const recentExpenses = [...expenses]
@@ -54,6 +59,8 @@ export default function DashboardView({
   const pmMap = useMemo(() => new Map(paymentMethods.map((pm) => [pm.id, pm])), [paymentMethods]);
   const catMap = useMemo(() => new Map(categories.map((c) => [c.id, c])), [categories]);
   const storeMap = useMemo(() => new Map(stores.map((s) => [s.id, s])), [stores]);
+
+  const displayedCategories = showAllCategories ? catStats : catStats.slice(0, 5);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -119,34 +126,38 @@ export default function DashboardView({
         </div>
       </section>
 
-      {/* Category breakdown if any */}
+      {/* Category breakdown (All categories with total sums & percentages) */}
       {catStats.length > 0 && (
         <section className="card">
           <div className="card-title-row">
             <div className="card-title">
               <PieChart size={18} color="#34d399" />
-              <span>Top Kategorien</span>
+              <span>Kategorien & Gesamtausgaben</span>
             </div>
-            <span className="card-subtitle">{catStats.length} aktiv</span>
+            <span className="card-subtitle">{catStats.length} mit Ausgaben</span>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {catStats.slice(0, 4).map((c) => (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {displayedCategories.map((c) => (
               <div key={c.id}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '4px' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.84rem', marginBottom: '4px' }}>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600 }}>
                     <span
                       style={{
-                        width: '8px',
-                        height: '8px',
+                        width: '9px',
+                        height: '9px',
                         borderRadius: '50%',
                         backgroundColor: c.color,
+                        flexShrink: 0,
                       }}
                     />
-                    {c.name}
+                    <span>{c.name}</span>
+                    <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)', fontWeight: 500 }}>
+                      ({c.count} {c.count === 1 ? 'Ausgabe' : 'Ausgaben'})
+                    </span>
                   </span>
-                  <span style={{ color: 'var(--text-main)', fontWeight: 700 }}>
-                    {formatCurrency(c.sum)} ({c.percentage.toFixed(0)}%)
+                  <span style={{ color: 'var(--text-main)', fontWeight: 800 }}>
+                    {formatCurrency(c.sum)} <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', fontWeight: 500 }}>({c.percentage.toFixed(1)}%)</span>
                   </span>
                 </div>
                 <div className="pm-progress-bg" style={{ marginTop: 0, height: '6px' }}>
@@ -160,6 +171,34 @@ export default function DashboardView({
                 </div>
               </div>
             ))}
+
+            {catStats.length > 5 && (
+              <button
+                type="button"
+                className="btn-link"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '4px',
+                  paddingTop: '6px',
+                  fontSize: '0.8rem',
+                }}
+                onClick={() => setShowAllCategories((prev) => !prev)}
+              >
+                {showAllCategories ? (
+                  <>
+                    <span>Weniger anzeigen</span>
+                    <ChevronUp size={15} />
+                  </>
+                ) : (
+                  <>
+                    <span>Alle {catStats.length} Kategorien anzeigen</span>
+                    <ChevronDown size={15} />
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </section>
       )}
@@ -211,6 +250,7 @@ export default function DashboardView({
                 category={catMap.get(expense.categoryId)}
                 store={storeMap.get(expense.storeId)}
                 onDelete={onDeleteExpense}
+                onClick={onSelectExpense}
               />
             ))}
           </div>

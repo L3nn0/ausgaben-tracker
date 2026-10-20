@@ -14,6 +14,7 @@ export default function PaymentMethodDetailModal({
   onDeleteExpense,
   onDeleteAllForMethod,
   onOpenAddExpenseWithMethod,
+  onSelectExpense,
 }) {
   if (!isOpen || !paymentMethod) return null;
 
@@ -137,6 +138,7 @@ export default function PaymentMethodDetailModal({
                   category={catMap.get(expense.categoryId)}
                   store={storeMap.get(expense.storeId)}
                   onDelete={onDeleteExpense}
+                  onClick={onSelectExpense}
                 />
               ))}
             </div>

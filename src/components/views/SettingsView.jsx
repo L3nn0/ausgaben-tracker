@@ -12,6 +12,8 @@ import {
   FileSpreadsheet,
   Smartphone,
   ShieldCheck,
+  Palette,
+  ExternalLink,
 } from 'lucide-react';
 import {
   downloadBackupJSON,
@@ -24,6 +26,8 @@ export default function SettingsView({
   paymentMethods = [],
   stores = [],
   expenses = [],
+  theme = 'dark',
+  onSetTheme,
   onOpenAddCategory,
   onEditCategory,
   onDeleteCategory,
@@ -38,17 +42,26 @@ export default function SettingsView({
 }) {
   const fileInputRef = useRef(null);
 
-  // Calculate usage counts
+  // Calculate usage counts and sums
   const catUsage = new Map();
   const pmUsage = new Map();
   const storeUsage = new Map();
+  const catSums = new Map();
+  const storeSums = new Map();
+
   expenses.forEach((e) => {
+    const amt = Number(e.amount) || 0;
     catUsage.set(e.categoryId, (catUsage.get(e.categoryId) || 0) + 1);
+    catSums.set(e.categoryId, (catSums.get(e.categoryId) || 0) + amt);
     pmUsage.set(e.paymentMethodId, (pmUsage.get(e.paymentMethodId) || 0) + 1);
     if (e.storeId) {
       storeUsage.set(e.storeId, (storeUsage.get(e.storeId) || 0) + 1);
+      storeSums.set(e.storeId, (storeSums.get(e.storeId) || 0) + amt);
     }
   });
+
+  const sortedCategories = [...categories].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'de'));
+  const sortedStores = [...stores].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'de'));
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -79,6 +92,75 @@ export default function SettingsView({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {/* Design Switcher Section */}
+      <section className="card">
+        <div className="card-title-row">
+          <div className="card-title">
+            <Palette size={18} color="#818cf8" />
+            <span>Design & Erscheinungsbild</span>
+          </div>
+        </div>
+
+        <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginBottom: '12px' }}>
+          Wähle dein bevorzugtes Design oder wechsle zur parallelen Seite. Beide Seiten teilen sich 100% deiner Ausgaben und Einstellungen:
+        </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
+          {/* Design 1 */}
+          <div
+            className="card"
+            style={{
+              cursor: 'pointer',
+              border: theme === 'dark' ? '2px solid #6366f1' : '1px solid var(--border-color)',
+              padding: '14px',
+              backgroundColor: '#0b0f19',
+              borderRadius: '16px',
+              transition: 'all 0.15s ease',
+            }}
+            onClick={() => onSetTheme('dark')}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#fff' }}>🌙 Design 1</span>
+              {theme === 'dark' && (
+                <span style={{ fontSize: '0.68rem', backgroundColor: '#4f46e5', color: '#fff', padding: '2px 6px', borderRadius: '999px', fontWeight: 700 }}>
+                  Aktiv
+                </span>
+              )}
+            </div>
+            <div style={{ fontSize: '0.74rem', color: '#94a3b8' }}>Dark Slate Studio</div>
+          </div>
+
+          {/* Design 2 */}
+          <div
+            className="card"
+            style={{
+              cursor: 'pointer',
+              border: theme === 'light' ? '2px solid #0f172a' : '1px solid var(--border-color)',
+              padding: '14px',
+              backgroundColor: '#ffffff',
+              borderRadius: '16px',
+              transition: 'all 0.15s ease',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.06)',
+            }}
+            onClick={() => onSetTheme('light')}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+              <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#0f172a' }}>✨ Design 2</span>
+              {theme === 'light' && (
+                <span style={{ fontSize: '0.68rem', backgroundColor: '#0f172a', color: '#fff', padding: '2px 6px', borderRadius: '999px', fontWeight: 700 }}>
+                  Aktiv
+                </span>
+              )}
+            </div>
+            <div style={{ fontSize: '0.74rem', color: '#64748b' }}>Clean Studio Light</div>
+          </div>
+        </div>
+
+        <div style={{ marginTop: '12px', fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+          Tipp: Du kannst Design 2 auch direkt über <a href="./light.html" style={{ color: '#3b82f6', fontWeight: 600 }}>light.html</a> oder über den Schalter oben im Header öffnen!
+        </div>
+      </section>
+
       {/* Stores Section (Geschäfte & Verkäufer) */}
       <section className="card">
         <div className="card-title-row">
@@ -97,7 +179,7 @@ export default function SettingsView({
         </div>
 
         <div className="settings-group">
-          {stores.map((s) => (
+          {sortedStores.map((s) => (
             <div key={s.id} className="settings-list-item">
               <div className="settings-list-left">
                 <span
@@ -109,11 +191,11 @@ export default function SettingsView({
                   }}
                 />
                 <div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff' }}>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>
                     {s.name}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                    {storeUsage.get(s.id) || 0} verknüpfte Ausgaben
+                    {storeUsage.get(s.id) || 0} Ausgaben • <strong style={{ color: 'var(--text-main)' }}>{formatCurrency(storeSums.get(s.id) || 0)}</strong>
                   </div>
                 </div>
               </div>
@@ -146,7 +228,7 @@ export default function SettingsView({
         <div className="card-title-row">
           <div className="card-title">
             <Tag size={18} color="#f59e0b" />
-            <span>Kategorien konfigurieren</span>
+            <span>Kategorien & Gesamtausgaben</span>
           </div>
           <button
             type="button"
@@ -159,7 +241,7 @@ export default function SettingsView({
         </div>
 
         <div className="settings-group">
-          {categories.map((c) => (
+          {sortedCategories.map((c) => (
             <div key={c.id} className="settings-list-item">
               <div className="settings-list-left">
                 <span
@@ -171,11 +253,11 @@ export default function SettingsView({
                   }}
                 />
                 <div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff' }}>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>
                     {c.name}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                    {catUsage.get(c.id) || 0} verknüpfte Ausgaben
+                    {catUsage.get(c.id) || 0} Ausgaben • <strong style={{ color: 'var(--text-main)' }}>{formatCurrency(catSums.get(c.id) || 0)}</strong>
                   </div>
                 </div>
               </div>
@@ -236,7 +318,7 @@ export default function SettingsView({
                   <IconHelper name={pm.icon || 'CreditCard'} size={16} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#fff' }}>
+                  <div style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--text-main)' }}>
                     {pm.name}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -337,7 +419,7 @@ export default function SettingsView({
       <section className="card" style={{ backgroundColor: 'rgba(99, 102, 241, 0.05)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
           <ShieldCheck size={20} color="#818cf8" />
-          <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-main)' }}>
             PWA Offline-Speicherung
           </h3>
         </div>

@@ -845,3 +845,337 @@
     transform: translateY(0) scale(1);
   }
 }
+
+/* ========================================================
+   DESIGN 2: CLEAN STUDIO LIGHT THEME (Inspired by Dribbble / Linear)
+   Matches reference images: Soft light grey background, crisp white cards,
+   sleek black pill buttons, pastel accents and soft diffused shadows.
+   ======================================================== */
+
+.app-container.theme-light {
+  --bg-main: #eef1f6;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f8fafc;
+  --bg-card-subtle: #f8fafc;
+  --bg-modal: #ffffff;
+  --border-color: rgba(0, 0, 0, 0.06);
+  --border-focus: rgba(37, 99, 235, 0.4);
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --primary: #0f172a; /* Sleek black pill button as in Image 1 & 4 */
+  --primary-hover: #1e293b;
+  --primary-light: rgba(15, 23, 42, 0.06);
+  --shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 10px 30px -4px rgba(0, 0, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.12);
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  background-color: #eef1f6;
+  color: #0f172a;
+}
+
+/* Header in Design 2 */
+.theme-light .app-header {
+  background-color: rgba(255, 255, 255, 0.88);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.02);
+}
+
+.theme-light .app-title-group h1 {
+  color: #0f172a;
+}
+
+.theme-light .app-logo {
+  background: linear-gradient(135deg, #2563eb 0%, #38bdf8 100%);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+}
+
+/* Design Switcher Pill */
+.design-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  font-size: 0.73rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.design-switch-btn:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.theme-light .design-switch-btn {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.theme-light .design-switch-btn:hover {
+  background-color: #f8fafc;
+}
+
+/* Hero Balance Card in Design 2 (Vibrant blue gradient accent matching Image 2) */
+.theme-light .hero-card {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 50%, #0ea5e9 100%);
+  border: none;
+  box-shadow: 0 14px 34px -4px rgba(37, 99, 235, 0.28);
+  border-radius: 24px;
+}
+
+.theme-light .hero-label {
+  color: #bfdbfe;
+}
+
+.theme-light .hero-amount {
+  color: #ffffff;
+}
+
+.theme-light .hero-stat-value {
+  color: #ffffff;
+}
+
+.theme-light .hero-stat-label {
+  color: #dbeafe;
+}
+
+.theme-light .hero-stats {
+  border-top-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Cards in Design 2 (Crisp Pure White with diffuse shadow) */
+.theme-light .card {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+  border-radius: 22px;
+}
+
+.theme-light .card-title {
+  color: #0f172a;
+}
+
+/* Payment Methods Grid Cards in Design 2 */
+.theme-light .pm-card {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  border-radius: 18px;
+}
+
+.theme-light .pm-card:hover {
+  background-color: #fafbfc;
+  border-color: rgba(37, 99, 235, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.theme-light .pm-name {
+  color: #475569;
+}
+
+.theme-light .pm-sum {
+  color: #0f172a;
+}
+
+.theme-light .pm-badge-count {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+.theme-light .pm-progress-bg {
+  background-color: #f1f5f9;
+}
+
+/* Expense Items in Design 2 (Matching Image 1 List Style) */
+.theme-light .expense-item {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+  border-radius: 18px;
+}
+
+.theme-light .expense-item:hover {
+  background-color: #fafbfc;
+}
+
+.theme-light .expense-title {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.theme-light .expense-amount {
+  color: #0f172a;
+  font-weight: 800;
+}
+
+/* Floating Action Button in Design 2 (Sleek dark pill matching Image 1) */
+.theme-light .fab-btn {
+  background: #0f172a;
+  color: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.35);
+}
+
+.theme-light .fab-btn:hover {
+  background: #1e293b;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.45);
+}
+
+/* Primary Button in Design 2 (Black Pill as in Image 1 & 4) */
+.theme-light .btn-primary {
+  background: #0f172a;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.18);
+  border-radius: 999px;
+}
+
+.theme-light .btn-primary:hover {
+  background: #1e293b;
+}
+
+.theme-light .btn-secondary {
+  background-color: #f1f5f9;
+  color: #0f172a;
+  border-radius: 999px;
+}
+
+.theme-light .btn-secondary:hover {
+  background-color: #e2e8f0;
+}
+
+/* Bottom Navigation in Design 2 (Frosted Clean White) */
+.theme-light .bottom-nav {
+  background-color: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
+}
+
+.theme-light .nav-item {
+  color: #94a3b8;
+}
+
+.theme-light .nav-item.active {
+  color: #0f172a;
+}
+
+.theme-light .nav-item.active svg {
+  stroke: #0f172a;
+}
+
+/* Search & Filters in Design 2 */
+.theme-light .search-filter-card {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  border-radius: 18px;
+}
+
+.theme-light .search-input {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  border-radius: 12px;
+}
+
+.theme-light .search-input:focus {
+  border-color: #2563eb;
+  background-color: #ffffff;
+}
+
+.theme-light .filter-select {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  border-radius: 12px;
+}
+
+.theme-light .filter-select:focus {
+  border-color: #2563eb;
+}
+
+/* Modals in Design 2 */
+.theme-light .modal-content {
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.18);
+  border-radius: 28px;
+}
+
+.theme-light .modal-header {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.theme-light .modal-header h2 {
+  color: #0f172a;
+}
+
+.theme-light .close-btn {
+  color: #64748b;
+}
+
+.theme-light .close-btn:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.theme-light .form-input,
+.theme-light .form-select,
+.theme-light .form-textarea {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  color: #0f172a;
+  border-radius: 14px;
+}
+
+.theme-light .form-input:focus,
+.theme-light .form-select:focus,
+.theme-light .form-textarea:focus {
+  border-color: #2563eb;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.theme-light .quick-add-cat-box {
+  background-color: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+}
+
+/* Settings Items in Design 2 */
+.theme-light .settings-list-item {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+}
+
+.theme-light .settings-list-item div[style*="color: #fff"] {
+  color: #0f172a !important;
+}
+
+.theme-light .pm-detail-header {
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+}
+
+.theme-light .pm-detail-sum {
+  color: #0f172a;
+}
+
+.theme-light div[style*="color: #fff"],
+.theme-light h2[style*="color: #fff"],
+.theme-light h3[style*="color: #fff"] {
+  color: #0f172a !important;
+}

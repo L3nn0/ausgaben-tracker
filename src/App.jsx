@@ -18,6 +18,7 @@ import PaymentMethodDetailModal from './components/PaymentMethodDetailModal';
 import CategoryModal from './components/CategoryModal';
 import StoreModal from './components/StoreModal';
 import PaymentMethodModal from './components/PaymentMethodModal';
+import ExpenseDetailModal from './components/ExpenseDetailModal';
 
 import DashboardView from './components/views/DashboardView';
 import ExpensesView from './components/views/ExpensesView';
@@ -28,12 +29,44 @@ export default function App() {
   const [data, setData] = useState(() => loadData());
   const [activeTab, setActiveTab] = useState('dashboard');
 
+  // Theme / Design State: 'dark' (Design 1) or 'light' (Design 2)
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname.toLowerCase();
+      const params = new URLSearchParams(window.location.search);
+      const urlTheme = params.get('theme') || params.get('design');
+      if (path.includes('light') || urlTheme === 'light' || urlTheme === '2' || urlTheme === 'clean') {
+        return 'light';
+      }
+      if (urlTheme === 'dark' || urlTheme === '1') {
+        return 'dark';
+      }
+      const saved = localStorage.getItem('ausgaben_tracker_theme');
+      if (saved) return saved;
+    }
+    return 'dark';
+  });
+
+  const handleToggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark';
+    setTheme(next);
+    localStorage.setItem('ausgaben_tracker_theme', next);
+  };
+
+  const handleSetTheme = (newTheme) => {
+    setTheme(newTheme);
+    localStorage.setItem('ausgaben_tracker_theme', newTheme);
+  };
+
   // Modals state
   const [isAddExpenseOpen, setIsAddExpenseOpen] = useState(false);
   const [initialPmIdForAdd, setInitialPmIdForAdd] = useState(null);
 
   // Payment Method Drilldown Modal
   const [detailPaymentMethod, setDetailPaymentMethod] = useState(null);
+
+  // Expense Detail Modal (clicked on an expense)
+  const [selectedExpenseForDetail, setSelectedExpenseForDetail] = useState(null);
 
   // Delete Confirmation Modal
   const [deleteModal, setDeleteModal] = useState({
@@ -233,9 +266,14 @@ export default function App() {
   };
 
   return (
-    <div className="app-container">
+    <div className={`app-container ${theme === 'light' ? 'theme-light' : 'theme-dark'}`}>
       {/* Top Header */}
-      <Navbar totalSpent={totalSpent} expensesCount={expenses.length} />
+      <Navbar
+        totalSpent={totalSpent}
+        expensesCount={expenses.length}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
+      />
 
       {/* Main View Area */}
       <main className="main-content">
@@ -252,6 +290,7 @@ export default function App() {
             }}
             onDeleteExpense={handleRequestDeleteExpense}
             onGoToExpenses={() => setActiveTab('expenses')}
+            onSelectExpense={(exp) => setSelectedExpenseForDetail(exp)}
           />
         )}
 
@@ -278,6 +317,7 @@ export default function App() {
               setInitialPmIdForAdd(null);
               setIsAddExpenseOpen(true);
             }}
+            onSelectExpense={(exp) => setSelectedExpenseForDetail(exp)}
           />
         )}
 
@@ -287,6 +327,8 @@ export default function App() {
             paymentMethods={paymentMethods}
             stores={stores}
             expenses={expenses}
+            theme={theme}
+            onSetTheme={handleSetTheme}
             onOpenAddCategory={() => setCategoryModal({ isOpen: true, category: null })}
             onEditCategory={(c) => setCategoryModal({ isOpen: true, category: c })}
             onDeleteCategory={handleDeleteCategory}
@@ -345,6 +387,18 @@ export default function App() {
         onDeleteExpense={handleRequestDeleteExpense}
         onDeleteAllForMethod={handleRequestDeleteAllForMethod}
         onOpenAddExpenseWithMethod={openAddExpenseWithMethod}
+        onSelectExpense={(exp) => setSelectedExpenseForDetail(exp)}
+      />
+
+      {/* Modal: Expense Detail View (Click on any expense item) */}
+      <ExpenseDetailModal
+        isOpen={Boolean(selectedExpenseForDetail)}
+        onClose={() => setSelectedExpenseForDetail(null)}
+        expense={selectedExpenseForDetail}
+        category={categories.find((c) => c.id === selectedExpenseForDetail?.categoryId)}
+        paymentMethod={paymentMethods.find((pm) => pm.id === selectedExpenseForDetail?.paymentMethodId)}
+        store={stores.find((s) => s.id === selectedExpenseForDetail?.storeId)}
+        onDeleteExpense={handleRequestDeleteExpense}
       />
 
       {/* Modal: Delete Confirmation (Single or All) */}

@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Download, Wifi, WifiOff } from 'lucide-react';
+import { Download, Sun, Moon } from 'lucide-react';
 import { formatCurrency } from '../services/storage';
 
-export default function Navbar({ totalSpent = 0, expensesCount = 0 }) {
+export default function Navbar({
+  totalSpent = 0,
+  expensesCount = 0,
+  theme = 'dark',
+  onToggleTheme,
+}) {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [installPrompt, setInstallPrompt] = useState(null);
   const [isInstalled, setIsInstalled] = useState(false);
@@ -65,6 +70,26 @@ export default function Navbar({ totalSpent = 0, expensesCount = 0 }) {
       </div>
 
       <div className="header-actions">
+        {/* Design Switcher Button */}
+        <button
+          type="button"
+          className="design-switch-btn"
+          onClick={onToggleTheme}
+          title={theme === 'light' ? 'Zu Design 1 (Dark) wechseln' : 'Zu Design 2 (Clean Light) wechseln'}
+        >
+          {theme === 'light' ? (
+            <>
+              <Moon size={13} />
+              <span>Design 1</span>
+            </>
+          ) : (
+            <>
+              <Sun size={13} color="#f59e0b" />
+              <span>Design 2</span>
+            </>
+          )}
+        </button>
+
         {/* Network status */}
         <div className={`status-badge ${isOnline ? 'online' : 'offline'}`} title={isOnline ? 'Online - Daten werden lokal synchronisiert' : 'Offline - Daten werden lokal gespeichert'}>
           <span className="status-dot"></span>

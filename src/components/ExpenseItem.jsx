@@ -9,13 +9,19 @@ export default function ExpenseItem({
   category,
   store,
   onDelete,
+  onClick,
 }) {
   const catColor = category?.color || '#64748b';
   const pmColor = paymentMethod?.color || '#3b82f6';
   const storeColor = store?.color || '#0ea5e9';
 
   return (
-    <div className="expense-item">
+    <div
+      className="expense-item"
+      onClick={() => onClick && onClick(expense)}
+      style={{ cursor: onClick ? 'pointer' : 'default' }}
+      title={onClick ? 'Klicke, um vollständige Details & Notizen anzuzeigen' : ''}
+    >
       <div className="expense-left">
         <span
           className="cat-color-dot"
@@ -84,7 +90,10 @@ export default function ExpenseItem({
           type="button"
           className="delete-btn"
           title="Ausgabe löschen"
-          onClick={() => onDelete(expense)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(expense);
+          }}
         >
           <Trash2 size={16} />
         </button>

@@ -11,7 +11,18 @@ export default function ExpensesView({
   onDeleteExpense,
   onRequestDeleteAll,
   onOpenAddExpense,
+  onSelectExpense,
 }) {
+  const sortedCategories = useMemo(
+    () => [...categories].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'de')),
+    [categories]
+  );
+
+  const sortedStores = useMemo(
+    () => [...stores].sort((a, b) => (a.name || '').localeCompare(b.name || '', 'de')),
+    [stores]
+  );
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPm, setSelectedPm] = useState('all');
   const [selectedCat, setSelectedCat] = useState('all');
@@ -100,7 +111,7 @@ export default function ExpensesView({
             onChange={(e) => setSelectedStore(e.target.value)}
           >
             <option value="all">Alle Geschäfte</option>
-            {stores.map((s) => (
+            {sortedStores.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}
               </option>
@@ -115,7 +126,7 @@ export default function ExpensesView({
             onChange={(e) => setSelectedCat(e.target.value)}
           >
             <option value="all">Alle Kategorien</option>
-            {categories.map((c) => (
+            {sortedCategories.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
               </option>
@@ -215,6 +226,7 @@ export default function ExpensesView({
               category={catMap.get(expense.categoryId)}
               store={storeMap.get(expense.storeId)}
               onDelete={onDeleteExpense}
+              onClick={onSelectExpense}
             />
           ))}
         </div>
