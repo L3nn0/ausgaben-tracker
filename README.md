@@ -22,29 +22,6 @@ Die App bietet zwei Design-Varianten mit identischer Tastenanordnung, gleichen F
 
 ---
 
-## 🌐 Auf GitHub Pages veröffentlichen
-
-Die App ist so eingerichtet, dass sie automatisch über GitHub Pages gebaut und veröffentlicht wird, sobald du den Code auf GitHub pushst.
-
-### Schritt 1: Code zu GitHub pushen
-```bash
-git add .
-git commit -m "feat: Ausgaben Tracker mit Design 1 & 2 und Verkäufern"
-git branch -M main
-git remote add origin https://github.com/<DEIN-GITHUB-BENUTZERNAME>/<DEIN-REPO-NAME>.git
-git push -u origin main
-```
-
-### Schritt 2: GitHub Pages in den Repository-Einstellungen aktivieren
-1. Gehe auf GitHub in dein Repository (`https://github.com/L3nn0/ausgaben-tracker`).
-2. Klicke oben auf **Settings** (Einstellungen) ⚙️ → links auf **Pages**.
-3. **Möglichkeit A (über /docs):**
-   - Source: `Deploy from a branch`
-   - Branch: `main` und Ordner: 👉 **`/docs`** auswählen
-4. **Möglichkeit B (über GitHub Actions):**
-   - Source: 👉 **`GitHub Actions`** auswählen
-
----
 
 ## ✨ Features der App
 
